@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Crop Recommendation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">🌾 Crop Recommendation System</div>
+        <div class="nav-menu">
+            <span class="nav-user">Welcome, {{ username }}!</span>
+            <a href="{{ url_for('dashboard') }}" class="nav-link active">Dashboard</a>
+            <a href="{{ url_for('history') }}" class="nav-link">History</a>
+            <a href="{{ url_for('logout') }}" class="nav-link logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="dashboard-header">
+            <h1>🌱 Get Your Crop Recommendation</h1>
+            <p>Enter your soil and environmental parameters below</p>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="form-section">
+                <form action="{{ url_for('predict') }}" method="post" class="prediction-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="N">
+                                <span class="label-icon">🧪</span>
+                                Nitrogen (N)
+                            </label>
+                            <input type="number" id="N" name="N" placeholder="e.g., 90" required step="0.01" min="0">
+                            <small>Nitrogen content ratio in soil</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="P">
+                                <span class="label-icon">⚗️</span>
+                                Phosphorus (P)
+                            </label>
+                            <input type="number" id="P" name="P" placeholder="e.g., 42" required step="0.01" min="0">
+                            <small>Phosphorus content ratio in soil</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="K">
+                                <span class="label-icon">🔬</span>
+                                Potassium (K)
+                            </label>
+                            <input type="number" id="K" name="K" placeholder="e.g., 43" required step="0.01" min="0">
+                            <small>Potassium content ratio in soil</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pH">
+                                <span class="label-icon">📊</span>
+                                Soil pH
+                            </label>
+                            <input type="number" id="pH" name="pH" placeholder="e.g., 6.5" required step="0.01" min="0" max="14">
+                            <small>pH value of the soil (0-14)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="temperature">
+                                <span class="label-icon">🌡️</span>
+                                Temperature (°C)
+                            </label>
+                            <input type="number" id="temperature" name="temperature" placeholder="e.g., 25.5" required step="0.1">
+                            <small>Average temperature in Celsius</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="humidity">
+                                <span class="label-icon">💧</span>
+                                Humidity (%)
+                            </label>
+                            <input type="number" id="humidity" name="humidity" placeholder="e.g., 80" required step="0.1" min="0" max="100">
+                            <small>Relative humidity percentage</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rainfall">
+                                <span class="label-icon">🌧️</span>
+                                Rainfall (mm)
+                            </label>
+                            <input type="number" id="rainfall" name="rainfall" placeholder="e.g., 200" required step="0.1" min="0">
+                            <small>Annual rainfall in mm</small>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-predict">
+                        🔮 Get Recommendation
+                    </button>
+                </form>
+            </div>
+
+            {% if prediction_text %}
+            <div class="result-section">
+                <div class="result-card">
+                    <h2>Prediction Result</h2>
+                    <div class="result-text">{{ prediction_text }}</div>
+                    
+                    {% if features %}
+                    <div class="input-summary">
+                        <h3>Input Parameters:</h3>
+                        <div class="param-grid">
+                            <div class="param-item">
+                                <span class="param-label">Nitrogen:</span>
+                                <span class="param-value">{{ features[0] }}</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">Phosphorus:</span>
+                                <span class="param-value">{{ features[1] }}</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">Potassium:</span>
+                                <span class="param-value">{{ features[2] }}</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">pH:</span>
+                                <span class="param-value">{{ features[3] }}</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">Temperature:</span>
+                                <span class="param-value">{{ features[4] }}°C</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">Humidity:</span>
+                                <span class="param-value">{{ features[5] }}%</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">Rainfall:</span>
+                                <span class="param-value">{{ features[6] }}mm</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 Crop Recommendation System. All rights reserved.</p>
+    </footer>
+</body>
+</html>
